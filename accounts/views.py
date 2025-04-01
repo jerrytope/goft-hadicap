@@ -170,7 +170,7 @@ def calculate_handicap(player, score):
 
 
 
-@login_required
+# @login_required
 def upload_players(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
@@ -214,7 +214,7 @@ def upload_players(request):
                 messages.success(request, "Players uploaded successfully!")
             except Exception as e:
                 messages.error(request, f"Error processing file: {e}")
-            return redirect("dashboard")
+            return redirect("login")
     
     else:
         form = UploadFileForm()

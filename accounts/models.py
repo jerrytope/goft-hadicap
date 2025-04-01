@@ -16,11 +16,17 @@ class CustomUser(AbstractUser):
         is_new = self._state.adding  # ✅ Check if new user
         super().save(*args, **kwargs)  # ✅ Save user first
 
-        if is_new and not self.handicap:
-            from .models import Handicap  # Avoid circular imports
+        # if is_new and not self.handicap:
+        #     from .models import Handicap  # Avoid circular imports
+        #     handicap = Handicap.objects.create(player=self, value=28.0)
+        #     self.handicap = handicap
+        #     super().save(*args, **kwargs)  # ✅ Save again to link handicap
+        if is_new and self.is_player and not hasattr(self, 'handicap'):
+            # ✅ Create handicap only if it doesn't already exist
             handicap = Handicap.objects.create(player=self, value=28.0)
             self.handicap = handicap
-            super().save(*args, **kwargs)  # ✅ Save again to link handicap
+            super().save(update_fields=['handicap'])  # ✅ Save again to update the handicap
+
 
 # ✅ Score Model
 class Score(models.Model):
