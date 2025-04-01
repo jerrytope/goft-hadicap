@@ -1,0 +1,61 @@
+/* Override all admin styles to match your theme */
+#header {
+    display: none; /* Hide default admin header */
+}
+
+.module {
+    border: none;
+    background: none;
+    box-shadow: none;
+}
+
+.object-tools {
+    margin-left: 0;
+    float: none;
+    display: flex;
+    gap: 10px;
+}
+
+.object-tools a {
+    background: #007bff;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.object-tools a:hover {
+    background: #0056b3;
+}
+
+/* Style form elements */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Style buttons */
+input[type="submit"],
+button,
+.submit-row input {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover,
+button:hover,
+.submit-row input:hover {
+    background: #0056b3;
+}

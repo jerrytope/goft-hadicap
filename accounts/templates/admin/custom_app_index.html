@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">{% blocktrans with name=opts.verbose_name_plural|capfirst %}{{ name }}{% endblocktrans %}</h3>
+        </div>
+        <div class="card-body">
+            {% block items %}
+                {% if app_list %}
+                    {% for model in app_list %}
+                        <div class="mb-4">
+                            <h4>{{ model.name }}</h4>
+                            <div class="list-group">
+                                {% for item in model.items %}
+                                    <a href="{{ item.admin_url }}" class="list-group-item list-group-item-action">
+                                        {{ item.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>{% trans "You don't have permission to view or edit anything." %}</p>
+                {% endif %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

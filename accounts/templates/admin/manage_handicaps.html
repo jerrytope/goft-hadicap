@@ -1,0 +1,104 @@
+<!-- {% extends "base.html" %}
+{% block title %}Manage Handicaps{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">🏌️ Manage Player Handicaps</h2>
+
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-4">
+                <label for="user" class="form-label">Select Player</label>
+                <select name="user" id="user" class="form-control" required>
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="handicap" class="form-label">Set Handicap</label>
+                <input type="number" step="0.1" name="handicap" id="handicap" class="form-control" required>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Update Handicap</button>
+            </div>
+        </div>
+    </form>
+
+    <h3 class="text-center mt-4">Current Handicaps</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>Handicap</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.handicap.value|default:"Not Set" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+ -->
+
+
+ {% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">🏌️ Manage Player Handicaps</h2>
+
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-4">
+                <label for="user" class="form-label">Select Player</label>
+                <select name="user" id="user" class="form-control" required>
+                    <option value="">Select a player...</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="handicap" class="form-label">Set Handicap</label>
+                <input type="number" step="0.1" name="handicap" id="handicap" class="form-control" required>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Update Handicap</button>
+            </div>
+        </div>
+    </form>
+
+    <h3 class="text-center mt-4">Current Handicaps</h3>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Player</th>
+                    <th>Handicap</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.handicap.value|default:"Not Set" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center">No players found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>
+                {% if add %}{% blocktrans with name=opts.verbose_name %}Add {{ name }}{% endblocktrans %}
+                {% else %}{{ original|truncatewords:"18" }}{% endif %}
+            </h4>
+        </div>
+        
+        <div class="card-body">
+            <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}method="post" novalidate>
+                {% csrf_token %}
+                {% block form_top %}{% endblock %}
+                
+                {% if errors %}
+                    <div class="alert alert-danger">
+                        {% if errors|length == 1 %}{% trans "Please correct the error below." %}
+                        {% else %}{% trans "Please correct the errors below." %}{% endif %}
+                    </div>
+                {% endif %}
+                
+                {% block field_sets %}
+                    {% for fieldset in adminform %}
+                        {% include "admin/includes/fieldset.html" %}
+                    {% endfor %}
+                {% endblock %}
+                
+                {% block after_field_sets %}{% endblock %}
+                {% block inline_field_sets %}
+                    {% for inline_admin_formset in inline_admin_formsets %}
+                        {% include inline_admin_formset.opts.template %}
+                    {% endfor %}
+                {% endblock %}
+                
+                {% block after_related_objects %}{% endblock %}
+                
+                <div class="form-group">
+                    <div class="submit-row">
+                        <input type="submit" value="{% trans 'Save' %}" class="btn btn-primary" name="_save">
+                        {% if show_delete_link %}
+                            <a href="{% url opts|admin_urlname:'delete' original.pk|admin_urlquote %}" class="btn btn-danger">
+                                {% trans "Delete" %}
+                            </a>
+                        {% endif %}
+                        <input type="submit" value="{% trans 'Save and continue editing' %}" class="btn btn-secondary" name="_continue">
+                        <input type="submit" value="{% trans 'Save and add another' %}" class="btn btn-secondary" name="_addanother">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

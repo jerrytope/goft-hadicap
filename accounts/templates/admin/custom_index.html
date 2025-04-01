@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">{{ site_header|default:_('Django administration') }}</h3>
+        </div>
+        <div class="card-body">
+            {% include "admin/app_list.html" with app_list=app_list %}
+        </div>
+    </div>
+</div>
+{% endblock %}

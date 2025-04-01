@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Handicap Card -->
+        <div class="col-md-6 mx-auto">
+            <div class="card shadow p-3 mb-4 bg-white rounded">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Your Handicap Index</h4>
+                    {% if handicap %}
+                        <h1 class="display-4 text-primary">{{ handicap.value }}</h1>  
+
+                        <!-- Display Handicap Category -->
+                        <h5 class="text-muted">
+                            {% if handicap.value <= 5 %}
+                                Elite Golfer(Cat 1) 🏆
+                            {% elif handicap.value <= 12 %}
+                                Advanced Player(Cat 2) 🏅
+                            {% elif handicap.value <= 18 %}
+                                Intermediate Golfer(Cat 3) ⛳
+                            {% elif handicap.value <= 28 %}
+                                Casual Golfer(Cat 4) 🎯
+                            {% else %}
+                                Beginner 🏌️
+                            {% endif %}
+                        </h5>
+                    {% else %}
+                        <p class="text-muted">You need to submit more scores to calculate a handicap.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Score History -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h3 class="text-center">Score History</h3>
+            {% if scores %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Course Name</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for score in scores %}
+                            <tr>
+                                <td>{{ score.date_played }}</td>
+                                 <td>{{ score.course_name }}</td>
+                                <td>{{ score.score }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-center">No scores submitted yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Score Trend Chart -->
+    {% if scores %}
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <h3 class="text-center">Score Trend</h3>
+                <canvas id="scoreChart"></canvas>
+                <script>
+                    var ctx = document.getElementById('scoreChart').getContext('2d');
+                    var scoreChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ chart_labels|default:"[]"|safe }},
+                            datasets: [{
+                                label: 'Score',
+                                data: {{ chart_data|default:"[]"|safe }},
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderWidth: 2,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: { beginAtZero: false }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
