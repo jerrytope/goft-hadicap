@@ -25,9 +25,9 @@ SECRET_KEY = 'django-insecure-r=c^j-#v(o84v52-$rp@)caw1o5da+q@b0-+olq3f_t4fov!=r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [^]
 
-
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # Application definition
 
 INSTALLED_APPS = [
@@ -84,21 +84,24 @@ WSGI_APPLICATION = 'golfhandicap.wsgi.application'
 # }
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'golf',
+#         'USER': 'root',
+#         'PASSWORD': 'Tope$@100',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         # 'OPTIONS': {
+#         #     'ssl': {'require': False},  # Ensure SSL is disabled for the connection
+#         # },
+#     }
+
+# }
+# Configure database dynamically using DATABASE_URL
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'golf',
-        'USER': 'root',
-        'PASSWORD': 'Tope$@100',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        # 'OPTIONS': {
-        #     'ssl': {'require': False},  # Ensure SSL is disabled for the connection
-        # },
-    }
-
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
