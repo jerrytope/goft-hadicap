@@ -33,7 +33,8 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # Application definition
 
 INSTALLED_APPS = [
-    'accounts.apps.AccountsConfig'
+    'accounts.apps.AccountsConfig',
+    # 'accounts.apps.AccountsConfig'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
