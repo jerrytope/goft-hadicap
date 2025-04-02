@@ -6,26 +6,20 @@ from django.conf import settings
 class CustomUser(AbstractUser):
     is_player = models.BooleanField(default=True)  # Players by default
     is_admin = models.BooleanField(default=False)  # Admins can be assigned manually
-    # ✅ Changed ForeignKey to OneToOneField to prevent multiple handicaps
     handicap = models.OneToOneField("Handicap", on_delete=models.SET_NULL, null=True, blank=True, related_name="user_handicap")
-
-
 
     def save(self, *args, **kwargs):
         """Ensure every new player gets a default handicap"""
         is_new = self._state.adding  # ✅ Check if new user
         super().save(*args, **kwargs)  # ✅ Save user first
 
-        # if is_new and not self.handicap:
-        #     from .models import Handicap  # Avoid circular imports
-        #     handicap = Handicap.objects.create(player=self, value=28.0)
-        #     self.handicap = handicap
-        #     super().save(*args, **kwargs)  # ✅ Save again to link handicap
-        if is_new and self.is_player and not hasattr(self, 'handicap'):
+        if is_new and self.is_player and self.handicap is None:
             # ✅ Create handicap only if it doesn't already exist
             handicap = Handicap.objects.create(player=self, value=28.0)
-            self.handicap = handicap
-            super().save(update_fields=['handicap'])  # ✅ Save again to update the handicap
+            CustomUser.objects.filter(pk=self.pk).update(handicap=handicap)  # ✅ Assign and save
+
+        # ✅ Refresh instance to ensure the new handicap is reflected
+        self.refresh_from_db()
 
 
 # ✅ Score Model
@@ -80,5 +74,3 @@ class Handicap(models.Model):
 
     def __str__(self):
         return f"{self.player.username} - Handicap: {self.value}"
-
-

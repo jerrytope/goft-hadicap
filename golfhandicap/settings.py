@@ -86,28 +86,28 @@ WSGI_APPLICATION = 'golfhandicap.wsgi.application'
 # }
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'golf',
-#         'USER': 'root',
-#         'PASSWORD': 'Tope$@100',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#         # 'OPTIONS': {
-#         #     'ssl': {'require': False},  # Ensure SSL is disabled for the connection
-#         # },
-#     }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'golf',
+        'USER': 'root',
+        'PASSWORD': 'Tope$@100',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        # 'OPTIONS': {
+        #     'ssl': {'require': False},  # Ensure SSL is disabled for the connection
+        # },
+    }
 
-# }
+}
 # Configure database dynamically using DATABASE_URL
 
 import os
 import dj_database_url
 
-DATABASES = {
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
-}
+# DATABASES = {
+#     'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+# }
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -154,3 +154,19 @@ import os
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+
+import os
+
+if os.getenv("CREATE_SUPERUSER") == "True":
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
+    admin_username = os.getenv("ADMIN_USERNAME", "admin")
+    admin_email = os.getenv("ADMIN_EMAIL", "admin@example.com")
+    admin_password = os.getenv("ADMIN_PASSWORD", "securepassword123")
+
+    if not User.objects.filter(username=admin_username).exists():
+        User.objects.create_superuser(admin_username, admin_email, admin_password)
+        print("Superuser created successfully.")

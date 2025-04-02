@@ -126,11 +126,47 @@ def dashboard(request):
 # ✅ Leaderboard View
 def leaderboard(request):
     # top_players = CustomUser.objects.order_by('handicap__value')[:10]  # ✅ Fix sorting issue
-    top_players = CustomUser.objects.filter(handicap__value__isnull=False).order_by('handicap__value')[:100]
+    top_players = CustomUser.objects.filter(handicap__value__isnull=False).order_by('handicap__value')[:10]
     return render(request, 'accounts/leaderboard.html', {'top_players': top_players})
 
 
 # ✅ Handicap Calculation
+# def calculate_handicap(player, score):
+#     """
+#     Calculates and updates the player's handicap.
+#     """
+#     categories = [
+#         {"min_hcp": 1, "max_hcp": 5, "par": 72, "factor": 0.1},
+#         {"min_hcp": 6, "max_hcp": 12, "par": 73, "factor": 0.2},
+#         {"min_hcp": 13, "max_hcp": 18, "par": 75, "factor": 0.3},
+#         {"min_hcp": 19, "max_hcp": 28, "par": 76, "factor": 0.4},
+#     ]
+
+#     handicap_instance, created = Handicap.objects.get_or_create(player=player)  # ✅ Ensure it exists
+#     current_hcp = handicap_instance.value if handicap_instance else 0.0
+
+#     for cat in categories:
+#         if cat["min_hcp"] <= current_hcp <= cat["max_hcp"]:
+#             course_par = cat["par"]
+#             # course_par = 72
+#             reduction_factor = cat["factor"]
+#             break
+#     else:
+#         return  
+
+#     if score > course_par:
+#         new_hcp = current_hcp + 0.1
+#     else:
+#         difference = course_par - score
+#         new_hcp = current_hcp - (reduction_factor * difference)
+
+#     new_hcp = round(new_hcp, 2)  
+
+#     handicap_instance.value = new_hcp
+#     handicap_instance.save()
+
+#     return new_hcp  
+
 def calculate_handicap(player, score):
     """
     Calculates and updates the player's handicap.
@@ -142,13 +178,12 @@ def calculate_handicap(player, score):
         {"min_hcp": 19, "max_hcp": 28, "par": 76, "factor": 0.4},
     ]
 
-    handicap_instance, created = Handicap.objects.get_or_create(player=player)  # ✅ Ensure it exists
+    handicap_instance, created = Handicap.objects.get_or_create(player=player)  
     current_hcp = handicap_instance.value if handicap_instance else 0.0
 
     for cat in categories:
         if cat["min_hcp"] <= current_hcp <= cat["max_hcp"]:
             course_par = cat["par"]
-            # course_par = 72
             reduction_factor = cat["factor"]
             break
     else:
@@ -162,11 +197,13 @@ def calculate_handicap(player, score):
 
     new_hcp = round(new_hcp, 2)  
 
+    # Ensure new_hcp does not exceed 28
+    new_hcp = min(new_hcp, 28)
+
     handicap_instance.value = new_hcp
     handicap_instance.save()
 
     return new_hcp  
-
 
 
 
