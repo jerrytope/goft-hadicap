@@ -138,7 +138,7 @@ def leaderboard(request):
     all_players = CustomUser.objects.filter(handicap__value__isnull=False).order_by('handicap__value')
 
     # Set pagination (20 players per page)
-    paginator = Paginator(all_players, 20)  
+    paginator = Paginator(all_players, 50)  
     page_number = request.GET.get('page')  # Get page number from URL
     page_obj = paginator.get_page(page_number)  # Get the page
 
