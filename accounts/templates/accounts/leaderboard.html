@@ -9,16 +9,18 @@
             <thead class="table-dark">
                 <tr>
                     <th>Rank</th>
-                    <th>Player</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
                     <th>Handicap</th>
                 </tr>
             </thead>
             <tbody>
-                {% for player in top_players %}
+                {% for player in page_obj %}
                 <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ player.username }}</td>
-                    <td>{{ player.handicap.value }}</td>  <!-- FIXED -->
+                    <td>{{ forloop.counter0|add:page_obj.start_index }}</td>  <!-- Adjust Rank -->
+                    <td>{{ player.first_name }}</td>
+                    <td>{{ player.last_name }}</td>
+                    <td>{{ player.handicap.value }}</td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -28,5 +30,32 @@
             </tbody>
         </table>
     </div>
+
+    <!-- ✅ Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center mt-4">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">« First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">‹ Prev</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next ›</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last »</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 {% endblock %}

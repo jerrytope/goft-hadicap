@@ -124,10 +124,27 @@ def dashboard(request):
 
 
 # ✅ Leaderboard View
+# def leaderboard(request):
+#     # top_players = CustomUser.objects.order_by('handicap__value')[:10]  # ✅ Fix sorting issue
+#     top_players = CustomUser.objects.filter(handicap__value__isnull=False).order_by('handicap__value')[:10]
+#     return render(request, 'accounts/leaderboard.html', {'top_players': top_players})
+
+
+from django.core.paginator import Paginator
+from django.shortcuts import render
+from .models import CustomUser  # Import your user model
+
 def leaderboard(request):
-    # top_players = CustomUser.objects.order_by('handicap__value')[:10]  # ✅ Fix sorting issue
-    top_players = CustomUser.objects.filter(handicap__value__isnull=False).order_by('handicap__value')[:10]
-    return render(request, 'accounts/leaderboard.html', {'top_players': top_players})
+    all_players = CustomUser.objects.filter(handicap__value__isnull=False).order_by('handicap__value')
+
+    # Set pagination (20 players per page)
+    paginator = Paginator(all_players, 20)  
+    page_number = request.GET.get('page')  # Get page number from URL
+    page_obj = paginator.get_page(page_number)  # Get the page
+
+    return render(request, 'accounts/leaderboard.html', {'page_obj': page_obj})
+
+
 
 
 # ✅ Handicap Calculation
