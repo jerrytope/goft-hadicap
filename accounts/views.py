@@ -76,7 +76,7 @@ def submit_score(request):
             calculate_handicap(request.user, score.score)
 
             messages.success(request, "Score submitted successfully!")
-            # return redirect("dashboard")  
+            return redirect("dashboard")  
     else:
         form = ScoreSubmissionForm()
 
@@ -109,7 +109,7 @@ def generate_score_chart(scores):
 @login_required
 def dashboard(request):
     handicap = Handicap.objects.filter(player=request.user).first()
-    scores = Score.objects.filter(player=request.user).order_by('-date_played')
+    scores = Score.objects.filter(player=request.user).order_by('-date_played')[:10]
 
     labels = [score.date_played.strftime("%Y-%m-%d") for score in scores]
     data = [score.score for score in scores]
@@ -138,7 +138,7 @@ def leaderboard(request):
     all_players = CustomUser.objects.filter(handicap__value__isnull=False).order_by('handicap__value')
 
     # Set pagination (20 players per page)
-    paginator = Paginator(all_players, 50)  
+    paginator = Paginator(all_players, 20)  
     page_number = request.GET.get('page')  # Get page number from URL
     page_obj = paginator.get_page(page_number)  # Get the page
 
@@ -147,80 +147,54 @@ def leaderboard(request):
 
 
 
-# ✅ Handicap Calculation
-# def calculate_handicap(player, score):
-#     """
-#     Calculates and updates the player's handicap.
-#     """
-#     categories = [
-#         {"min_hcp": 1, "max_hcp": 5, "par": 72, "factor": 0.1},
-#         {"min_hcp": 6, "max_hcp": 12, "par": 73, "factor": 0.2},
-#         {"min_hcp": 13, "max_hcp": 18, "par": 75, "factor": 0.3},
-#         {"min_hcp": 19, "max_hcp": 28, "par": 76, "factor": 0.4},
-#     ]
-
-#     handicap_instance, created = Handicap.objects.get_or_create(player=player)  # ✅ Ensure it exists
-#     current_hcp = handicap_instance.value if handicap_instance else 0.0
-
-#     for cat in categories:
-#         if cat["min_hcp"] <= current_hcp <= cat["max_hcp"]:
-#             course_par = cat["par"]
-#             # course_par = 72
-#             reduction_factor = cat["factor"]
-#             break
-#     else:
-#         return  
-
-#     if score > course_par:
-#         new_hcp = current_hcp + 0.1
-#     else:
-#         difference = course_par - score
-#         new_hcp = current_hcp - (reduction_factor * difference)
-
-#     new_hcp = round(new_hcp, 2)  
-
-#     handicap_instance.value = new_hcp
-#     handicap_instance.save()
-
-#     return new_hcp  
-
 def calculate_handicap(player, score):
     """
-    Calculates and updates the player's handicap.
+    Calculates and updates the player's handicap using 72 as the official course par.
     """
+    COURSE_PAR = 72  # ✅ Official static course par
+
     categories = [
-        {"min_hcp": 1, "max_hcp": 5, "par": 72, "factor": 0.1},
-        {"min_hcp": 6, "max_hcp": 12, "par": 73, "factor": 0.2},
-        {"min_hcp": 13, "max_hcp": 18, "par": 75, "factor": 0.3},
-        {"min_hcp": 19, "max_hcp": 28, "par": 76, "factor": 0.4},
+        {"min_hcp": 1, "max_hcp": 5.5, "threshold": 72, "factor": 0.1},
+        {"min_hcp": 6, "max_hcp": 12.5, "threshold": 73, "factor": 0.2},
+        {"min_hcp": 13, "max_hcp": 18.5, "threshold": 75, "factor": 0.3},
+        {"min_hcp": 19, "max_hcp": 28, "threshold": 76, "factor": 0.4},
     ]
 
+    # ✅ Always fetch the most recent Handicap instance
     handicap_instance, created = Handicap.objects.get_or_create(player=player)  
-    current_hcp = handicap_instance.value if handicap_instance else 0.0
+    current_hcp = handicap_instance.value  # ✅ Get latest handicap
 
+    # Determine the player's category
     for cat in categories:
         if cat["min_hcp"] <= current_hcp <= cat["max_hcp"]:
-            course_par = cat["par"]
+            threshold = cat["threshold"]
             reduction_factor = cat["factor"]
             break
     else:
-        return  
+        return  # No category matched, return without updating
 
-    if score > course_par:
-        new_hcp = current_hcp + 0.1
+    # ✅ Apply correct calculations
+    if COURSE_PAR <= score <= threshold:
+        new_hcp = current_hcp  # ✅ Handicap remains the same within the range
+    elif score > threshold:
+        new_hcp = current_hcp + 0.1  # ✅ Add 0.1 if score is above the threshold
     else:
-        difference = course_par - score
-        new_hcp = current_hcp - (reduction_factor * difference)
+        difference = COURSE_PAR - score
+        new_hcp = current_hcp - (reduction_factor * difference)  # ✅ Reduce handicap
 
-    new_hcp = round(new_hcp, 2)  
+    new_hcp = round(new_hcp, 2)  # ✅ Round to 2 decimal places
 
-    # Ensure new_hcp does not exceed 28
+    # ✅ Ensure new_hcp does not exceed 28
     new_hcp = min(new_hcp, 28)
 
-    handicap_instance.value = new_hcp
-    handicap_instance.save()
+    # ✅ Ensure handicap is never negative
+    new_hcp = max(new_hcp, 0)
 
-    return new_hcp  
+    # ✅ Save updated handicap to the database
+    handicap_instance.value = new_hcp
+    handicap_instance.save(update_fields=["value"])
+
+    return new_hcp
 
 
 

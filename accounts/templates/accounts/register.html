@@ -2,7 +2,7 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center vh-100">
+<div class="d-flex justify-content-center align-items-center vh-100" style="min-height: 100vh;">
     <div class="card shadow-lg p-4" style="width: 400px;">
         <h3 class="text-center">Register</h3>
         
@@ -17,32 +17,32 @@
         <form method="post">
             {% csrf_token %}
             
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="id_first_name" class="form-label">First Name</label>
                 <input type="text" name="first_name" id="id_first_name" class="form-control" required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="id_last_name" class="form-label">Last Name</label>
                 <input type="text" name="last_name" id="id_last_name" class="form-control" required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="id_username" class="form-label">Username</label>
                 <input type="text" name="username" id="id_username" class="form-control" required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="id_email" class="form-label">Email</label>
                 <input type="email" name="email" id="id_email" class="form-control" required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="id_password1" class="form-label">Password</label>
                 <input type="password" name="password1" id="id_password1" class="form-control" required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2">
                 <label for="id_password2" class="form-label">Confirm Password</label>
                 <input type="password" name="password2" id="id_password2" class="form-control" required>
             </div>
