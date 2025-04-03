@@ -88,28 +88,28 @@ WSGI_APPLICATION = 'golfhandicap.wsgi.application'
 # }
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'golf',
-        'USER': 'root',
-        'PASSWORD': 'Tope$@100',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        # 'OPTIONS': {
-        #     'ssl': {'require': False},  # Ensure SSL is disabled for the connection
-        # },
-    }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'golf',
+#         'USER': 'root',
+#         'PASSWORD': 'Tope$@100',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         # 'OPTIONS': {
+#         #     'ssl': {'require': False},  # Ensure SSL is disabled for the connection
+#         # },
+#     }
 
-}
+# }
 # Configure database dynamically using DATABASE_URL
 
-# import os
-# import dj_database_url
+import os
+import dj_database_url
 
-# DATABASES = {
-#     'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
-# }
+DATABASES = {
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+}
 # # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
